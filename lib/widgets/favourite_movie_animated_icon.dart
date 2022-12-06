@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
@@ -8,27 +10,21 @@ enum BookmarkIcon {
 }
 
 class FavouriteMovieAnimatedIcon extends StatefulWidget {
-  final Function() addToFavourite;
-  final Function() removeFromFavourite;
   final bool isFavourite;
-  const FavouriteMovieAnimatedIcon(
-      {required this.addToFavourite, required this.removeFromFavourite, this.isFavourite = false, super.key});
+  final Function() onPressed;
+
+  const FavouriteMovieAnimatedIcon({
+    required this.onPressed,
+    this.isFavourite = false,
+    super.key,
+  });
 
   @override
   State<FavouriteMovieAnimatedIcon> createState() => _FavouriteMovieAnimatedIconState();
 }
 
 class _FavouriteMovieAnimatedIconState extends State<FavouriteMovieAnimatedIcon> {
-  int _currentIcon = 0;
-  bool isFavourite = false;
-
-  @override
-  void initState() {
-    // Current icon 0 - bookmark outlined, 1 - bookmark added
-    _currentIcon = widget.isFavourite ? BookmarkIcon.added.index : BookmarkIcon.outlined.index;
-    isFavourite = widget.isFavourite;
-    super.initState();
-  }
+  late bool isFavourite = widget.isFavourite;
 
   @override
   Widget build(BuildContext context) => IconButton(
@@ -41,7 +37,7 @@ class _FavouriteMovieAnimatedIconState extends State<FavouriteMovieAnimatedIcon>
                 : Tween<double>(begin: 1, end: 1).animate(animation),
             child: ScaleTransition(scale: animation, child: child),
           ),
-          child: _currentIcon == 0
+          child: !isFavourite
               ? const Icon(
                   Icons.bookmark_outline,
                   key: ValueKey(BookmarkIcon.outlined),
@@ -53,12 +49,9 @@ class _FavouriteMovieAnimatedIconState extends State<FavouriteMovieAnimatedIcon>
                   color: AppColors.primaryColor,
                 ),
         ),
-        onPressed: () {
-          setState(() {
-            _currentIcon = _currentIcon == 0 ? 1 : 0;
-          });
-          widget.isFavourite ? widget.removeFromFavourite() : widget.addToFavourite();
+        onPressed: () => setState(() {
           isFavourite = !isFavourite;
-        },
+          widget.onPressed();
+        }),
       );
 }

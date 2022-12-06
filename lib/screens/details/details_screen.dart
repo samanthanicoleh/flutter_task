@@ -42,16 +42,6 @@ class DetailsScreen extends ConsumerWidget {
                     child: DetailsSection(
                       movie: movieDetails,
                       listGenres: listGenres,
-                      addToFavourite: () {
-                        ref.read(hiveStateProvider.notifier).addFavouriteMoviesToBox(movie: movieDetails);
-                        ref.read(favouriteMovieListProvider.notifier).update((state) => [movieDetails, ...state]);
-                      },
-                      removeFromFavourite: () {
-                        ref.read(hiveStateProvider.notifier).removeFavouriteMoviesToBox(movie: movieDetails);
-                        ref
-                            .read(favouriteMovieListProvider.notifier)
-                            .update((state) => state.where((element) => element.id != movieDetails.id).toList());
-                      },
                       ref: ref,
                     ),
                   ),
@@ -99,16 +89,14 @@ class DetailsHeaderImage extends StatelessWidget {
 class DetailsSection extends StatelessWidget {
   final Movie movie;
   final List<Genre>? listGenres;
-  final Function() addToFavourite;
-  final Function() removeFromFavourite;
   final WidgetRef ref;
-  const DetailsSection(
-      {required this.movie,
-      required this.listGenres,
-      required this.addToFavourite,
-      required this.removeFromFavourite,
-      required this.ref,
-      super.key});
+
+  const DetailsSection({
+    required this.movie,
+    required this.listGenres,
+    required this.ref,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) => Container(
@@ -135,8 +123,7 @@ class DetailsSection extends StatelessWidget {
                     ),
                   ),
                   FavouriteMovieAnimatedIcon(
-                    addToFavourite: addToFavourite,
-                    removeFromFavourite: removeFromFavourite,
+                    onPressed: () => ref.read(movieStateProvider.notifier).favouriteMovie(movie),
                     isFavourite: ref.read(hiveStateProvider.notifier).checkIfBoxContains(movie: movie),
                   ),
                 ],

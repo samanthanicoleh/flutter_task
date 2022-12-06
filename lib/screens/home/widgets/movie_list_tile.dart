@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -95,16 +97,7 @@ class MovieListTile extends ConsumerWidget {
                     color: AppColors.primaryColor,
                   )
                 : FavouriteMovieAnimatedIcon(
-                    addToFavourite: () {
-                      ref.read(hiveStateProvider.notifier).addFavouriteMoviesToBox(movie: movie);
-                      ref.read(favouriteMovieListProvider.notifier).update((state) => [movie, ...state]);
-                    },
-                    removeFromFavourite: () {
-                      ref.read(hiveStateProvider.notifier).removeFavouriteMoviesToBox(movie: movie);
-                      ref
-                          .read(favouriteMovieListProvider.notifier)
-                          .update((state) => state.where((element) => element.id != movie.id).toList());
-                    },
+                    onPressed: () => ref.read(movieStateProvider.notifier).favouriteMovie(movie),
                     isFavourite: ref.read(hiveStateProvider.notifier).checkIfBoxContains(movie: movie),
                   ),
           ),

@@ -38,4 +38,18 @@ class MovieProvider extends AsyncNotifier<List<Movie>> {
     state = AsyncData(currentMovieResults);
     return movieData.results;
   }
+
+  void favouriteMovie(Movie movie) {
+    final isFavourite = ref.read(hiveStateProvider.notifier).checkIfBoxContains(movie: movie);
+
+    if (!isFavourite) {
+      ref.read(hiveStateProvider.notifier).addFavouriteMoviesToBox(movie: movie);
+      ref.read(favouriteMovieListProvider.notifier).update((state) => [movie, ...state]);
+    } else {
+      ref.read(hiveStateProvider.notifier).removeFavouriteMoviesToBox(movie: movie);
+      ref
+          .read(favouriteMovieListProvider.notifier)
+          .update((state) => state.where((element) => element.id != movie.id).toList());
+    }
+  }
 }
